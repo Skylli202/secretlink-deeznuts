@@ -2,6 +2,7 @@ import { fail, type Actions } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { formSchema } from './schema';
+const { subtle } = globalThis.crypto;
 
 export const load = async () => {
   return {
@@ -11,18 +12,27 @@ export const load = async () => {
 
 export const actions: Actions = {
   new: async (event) => {
-    console.log('YOYO')
     const form = await superValidate(event, zod(formSchema));
-    console.log(form.data)
 
     if (!form.valid) {
       return fail(400, {
         form,
       });
     }
-    console.log(form.valid, form.data)
-    const enc = new TextEncoder()
-    console.log(enc.encode(form.data.iv))
+
+    const key = await subtle.importKey("jwk", JSON.parse(form.data.keyPubPart), {
+      name: 'AES-GCM',
+      length: 256
+    }, true, ['encrypt', 'decrypt'])
+
+    const iv = new Uint8Array([...atob(form.data.iv)].map(char => char.charCodeAt(0)))
+    const data = new Uint8Array([...atob(form.data.data)].map(char => char.charCodeAt(0))).buffer
+
+    console.dir({ key, iv, data })
+
+    const decoder = new TextDecoder()
+    const mySecret = await subtle.decrypt({ name: "AES-GCM", iv }, key, data)
+    console.log(`Secret: ${decoder.decode(mySecret)}`)
 
     return {
       form,

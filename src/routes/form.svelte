@@ -8,7 +8,6 @@
 	import SuperDebug, { type SuperValidated, type Infer, superForm } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 
-	//export let data: SuperValidated<Infer<FormSchema>>;
 	let { data }: { data: SuperValidated<Infer<FormSchema>> } = $props();
 
 	const form = superForm(data, {
@@ -24,8 +23,8 @@
 		},
 		onSubmit: async ({ formData }) => {
 			console.log('superForm::onSubmit');
-			const enc = new TextEncoder();
-			const dec = new TextDecoder();
+			const encoder = new TextEncoder();
+			const decoder = new TextDecoder();
 
 			// Generate AES-GCM key
 			const key = await window.crypto.subtle.generateKey(
@@ -36,25 +35,30 @@
 				true,
 				['encrypt', 'decrypt']
 			);
-			console.log(`Key generated`, key);
 
 			// Generate IV
 			const iv = window.crypto.getRandomValues(new Uint8Array(12));
-			console.log('iv', iv);
 
 			// Encode secret
-			const encoded = enc.encode(secret);
+			const encoded = encoder.encode(secret);
 
 			// Encrypt the encoded secret
 			const data = await window.crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, encoded);
 
 			// Set formData
 			//	Export the key & split it in half
-			formData.set('keyPubPart', 'TODO');
+			const exportedKey = await window.crypto.subtle.exportKey('jwk', key);
+			formData.set('keyPubPart', JSON.stringify(exportedKey));
 			//	Encode the IV
-			formData.set('iv', dec.decode(iv));
+			formData.set('iv', btoa(Array.from(iv, (byte) => String.fromCharCode(byte)).join('')));
 			//	Decode data
-			formData.set('data', dec.decode(data));
+			formData.set(
+				'data',
+				btoa(Array.from(new Uint8Array(data), (byte) => String.fromCharCode(byte)).join(''))
+			);
+
+			console.dir(formData.entries().toArray());
+			console.dir({ key, iv, data });
 		},
 		onUpdate: () => {
 			console.log('superForm::onUpdate');
