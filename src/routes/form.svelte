@@ -1,10 +1,14 @@
 <script lang="ts">
+	import { page } from '$app/stores';
+	import { Input } from '$lib/components/ui/input';
+	import { Button } from '$lib/components/ui/button';
 	import * as Form from '$lib/components/ui/form';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { formSchema, type FormSchema } from './schema';
 
 	import { type SuperValidated, type Infer, superForm } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
+	import { ClipboardPen } from 'lucide-svelte';
 
 	let { data }: { data: SuperValidated<Infer<FormSchema>> } = $props();
 
@@ -71,23 +75,31 @@
 	const { enhance, message } = form;
 
 	let secret = $state('');
+	let secretURL = $derived(
+		`${$page.url.protocol}//${$page.url.host}/secrets/${$message?.secretId}#${keyPriPart}`
+	);
 </script>
 
 {#if $message}
-	<div>
-		Your secret link is: {$message.secretId}?{keyPriPart}
-	</div>
+	<form class="flex w-full max-w-[80%] items-center space-x-0 justify-self-center">
+		<Input type="text" class="rounded-r-none" value={secretURL} readonly />
+		<Button
+			type="button"
+			class="rounded-l-none"
+			onclick={() => {
+				navigator.clipboard.writeText(secretURL);
+			}}
+		>
+			Copy
+			<ClipboardPen class="ml-2"></ClipboardPen>
+		</Button>
+	</form>
 {:else}
-	<form method="POST" action="?/new" use:enhance>
+	<form method="POST" action="?/new" class="w-full max-w-[80%] justify-self-center" use:enhance>
 		<Form.Field {form} name="data">
 			<Form.Control let:attrs>
 				<Form.Label>Your secret</Form.Label>
-				<Textarea
-					{...attrs}
-					placeholder="What's your secret?"
-					class="resize-none"
-					bind:value={secret}
-				/>
+				<Textarea {...attrs} class="resize-none" bind:value={secret} />
 				<Form.Description>
 					Enter a secret here. Get a secure one-time link in return.
 				</Form.Description>

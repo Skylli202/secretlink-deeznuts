@@ -9,7 +9,5 @@
 </script>
 
 <div class="container mt-8">
-	<div class="">
-		<Form data={data.form} />
-	</div>
+	<Form data={data.form} />
 </div>
