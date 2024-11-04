@@ -1,14 +1,20 @@
 import { fail, type Actions } from '@sveltejs/kit';
-import { superValidate } from 'sveltekit-superforms';
+import { message, setError, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { formSchema } from './schema';
-const { subtle } = globalThis.crypto;
+import type { RecordModel } from 'pocketbase';
 
 export const load = async () => {
   return {
     form: await superValidate(zod(formSchema))
   };
 };
+
+export interface Secret extends RecordModel {
+  iv: string
+  data: string
+  keyPubPart: string
+}
 
 export const actions: Actions = {
   new: async (event) => {
@@ -20,22 +26,13 @@ export const actions: Actions = {
       });
     }
 
-    const key = await subtle.importKey("jwk", JSON.parse(form.data.keyPubPart), {
-      name: 'AES-GCM',
-      length: 256
-    }, true, ['encrypt', 'decrypt'])
+    try {
+      // No Dynamic Typing with PocketBase yet :(
 
-    const iv = new Uint8Array([...atob(form.data.iv)].map(char => char.charCodeAt(0)))
-    const data = new Uint8Array([...atob(form.data.data)].map(char => char.charCodeAt(0))).buffer
-
-    console.dir({ key, iv, data })
-
-    const decoder = new TextDecoder()
-    const mySecret = await subtle.decrypt({ name: "AES-GCM", iv }, key, data)
-    console.log(`Secret: ${decoder.decode(mySecret)}`)
-
-    return {
-      form,
-    };
+      const secret = await event.locals.pb.collection('secrets').create<Secret>(form.data)
+      return message(form, { secretId: secret.id })
+    } catch (error) {
+      return setError(form, `Internal Server Error. Unable to process the request.`, { status: 500 })
+    }
   },
 };
