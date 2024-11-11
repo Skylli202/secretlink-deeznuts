@@ -82,7 +82,13 @@
 
 {#if $message}
 	<form class="flex w-full max-w-[80%] items-center space-x-0 justify-self-center">
-		<Input type="text" class="rounded-r-none" value={secretURL} readonly />
+		<Input
+			type="text"
+			class="rounded-r-none focus-visible:ring-0 disabled:cursor-pointer"
+			value={secretURL}
+			disabled
+			readonly
+		/>
 		<Button
 			type="button"
 			class="rounded-l-none"
