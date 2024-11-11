@@ -1,5 +1,5 @@
 import { fail } from "@sveltejs/kit";
-import type { PageServerLoad } from "./$types";
+import type { Actions, PageServerLoad } from "./$types";
 import { ClientResponseError } from "pocketbase";
 import type { Secret } from "../../+page.server";
 
@@ -15,4 +15,17 @@ export const load: PageServerLoad = async ({ locals: { pb }, params }) => {
   //   }
   //   return fail(400)
   // }
+}
+
+export const actions: Actions = {
+  default: async ({ params, request }) => {
+    const secretId = params.id
+    const data = await request.formData()
+
+    if (data.get("secretId") && params.id !== data.get("secretId")) {
+      return fail(400)
+    }
+    console.log(data)
+    return { deleted: true, secretId: secretId }
+  }
 }
