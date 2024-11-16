@@ -6,8 +6,6 @@
 	import { ClipboardPen, Trash2 } from 'lucide-svelte';
 	import { enhance } from '$app/forms';
 	import { Skeleton } from '$lib/components/ui/skeleton';
-	import * as Card from '$lib/components/ui/card';
-	import Page from '../../+page.svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -59,28 +57,30 @@
 	{#await promise()}
 		<Skeleton class="h-[20px] max-w-[80%] justify-self-center" />
 	{:then value}
-		<div class="max-h-fil flex max-h-screen w-full max-w-[80%] flex-col gap-2 justify-self-center">
-			<Textarea
-				class="h-fit resize-none focus:border-none focus-visible:ring-0 disabled:cursor-pointer"
-				{value}
-			/>
-			<div class="flex w-full flex-row gap-2">
-				<Button
-					type="button"
-					class="flex-auto"
-					onclick={() => {
-						navigator.clipboard.writeText(value);
-					}}
-				>
-					Copy
-					<ClipboardPen class="ml-2"></ClipboardPen>
-				</Button>
-				<form method="POST" class="flex w-3/12 flex-col" use:enhance>
-					<input name="secretId" type="text" value={data.secret.id} hidden />
-					<Button variant="destructive" type="submit">
-						<Trash2 />
+		<div class="flex flex-col">
+			<div class="m-auto w-full max-w-[80%]">
+				<Textarea
+					class="h-fit resize-none focus:border-none focus-visible:ring-0 disabled:cursor-pointer"
+					{value}
+				/>
+				<div class="flex w-full flex-row gap-2">
+					<Button
+						type="button"
+						class="flex-auto"
+						onclick={() => {
+							navigator.clipboard.writeText(value);
+						}}
+					>
+						Copy
+						<ClipboardPen class="ml-2"></ClipboardPen>
 					</Button>
-				</form>
+					<form method="POST" class="flex w-3/12 flex-col" use:enhance>
+						<input name="secretId" type="text" value={data.secret.id} hidden />
+						<Button variant="destructive" type="submit">
+							<Trash2 />
+						</Button>
+					</form>
+				</div>
 			</div>
 		</div>
 	{:catch error}

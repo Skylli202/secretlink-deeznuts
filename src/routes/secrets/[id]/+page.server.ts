@@ -18,14 +18,20 @@ export const load: PageServerLoad = async ({ locals: { pb }, params }) => {
 }
 
 export const actions: Actions = {
-  default: async ({ params, request }) => {
+  default: async ({ params, request, locals }) => {
     const secretId = params.id
     const data = await request.formData()
 
     if (data.get("secretId") && params.id !== data.get("secretId")) {
       return fail(400)
     }
-    console.log(data)
-    return { deleted: true, secretId: secretId }
+    try {
+      // No Dynamic Typing with PocketBase yet :(
+
+      const deleted = await locals.pb.collection('secrets').delete(secretId)
+      return { deleted, secretId: secretId }
+    } catch (error) {
+      return fail(400, { message: `Internal Server Error. Unable to process the request.` })
+    }
   }
 }
