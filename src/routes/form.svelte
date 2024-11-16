@@ -6,9 +6,9 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { formSchema, type FormSchema } from './schema';
 
-	import { type SuperValidated, type Infer, superForm } from 'sveltekit-superforms';
+	import SuperDebug, { type SuperValidated, type Infer, superForm } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
-	import { ClipboardPen } from 'lucide-svelte';
+	import { ClipboardPen, Minus, Plus } from 'lucide-svelte';
 
 	let { data }: { data: SuperValidated<Infer<FormSchema>> } = $props();
 
@@ -16,16 +16,16 @@
 	let keyPriPart = '';
 	const form = superForm(data, {
 		validators: zodClient(formSchema),
-		onChange(event) {
-			if (event.target) {
-				// Form input event
-				console.log(event.path, 'was changed with', event.target, 'in form', event.formElement);
-			} else {
-				// Programmatic event
-				console.log('Fields updated:', event.paths);
-			}
-		},
-		onSubmit: async ({ formData }) => {
+		// onChange(event) {
+		// 	if (event.target) {
+		// 		// Form input event
+		// 		console.log(event.path, 'was changed with', event.target, 'in form', event.formElement);
+		// 	} else {
+		// 		// Programmatic event
+		// 		console.log('Fields updated:', event.paths);
+		// 	}
+		// },
+		onSubmit: async (input) => {
 			console.log('superForm::onSubmit');
 			const encoder = new TextEncoder();
 
@@ -56,23 +56,25 @@
 			);
 			const keyPubPart = b64ExportedKey.slice(0, 22);
 			keyPriPart = b64ExportedKey.slice(22);
-			console.dir({ b64ExportedKey, keyPubPart, keyPriPart });
+			// console.dir({ b64ExportedKey, keyPubPart, keyPriPart });
 
-			formData.set('keyPubPart', keyPubPart);
+			input.formData.set('keyPubPart', keyPubPart);
 			//	Encode the IV
-			formData.set('iv', btoa(Array.from(iv, (byte) => String.fromCharCode(byte)).join('')));
+			input.formData.set('iv', btoa(Array.from(iv, (byte) => String.fromCharCode(byte)).join('')));
 			//	Decode data
-			formData.set(
+			input.formData.set(
 				'data',
 				btoa(Array.from(new Uint8Array(data), (byte) => String.fromCharCode(byte)).join(''))
 			);
+			input.formData.set('maxViewCount', $formData.maxViewCount.toString());
 
-			// console.dir(formData.entries().toArray());
+			console.log(input.formData.has('maxViewCount'), input.formData.get('maxViewCount'));
+			console.dir(input.formData.entries().toArray());
 			// console.dir({ key, iv, data });
 		}
 	});
 
-	const { enhance, message } = form;
+	const { form: formData, enhance, message } = form;
 
 	let secret = $state('');
 	let secretURL = $derived(
@@ -101,17 +103,48 @@
 		</Button>
 	</form>
 {:else}
-	<form method="POST" action="?/new" class="w-full max-w-[80%] justify-self-center" use:enhance>
+	<form
+		method="POST"
+		action="?/new"
+		class="flex w-full max-w-[80%] flex-col justify-self-center"
+		use:enhance
+	>
 		<Form.Field {form} name="data">
 			<Form.Control let:attrs>
-				<Form.Label>Your secret</Form.Label>
+				<Form.Label>Enter your secret</Form.Label>
 				<Textarea {...attrs} class="resize-none" bind:value={secret} />
-				<Form.Description>
-					Enter a secret here. Get a secure one-time link in return.
-				</Form.Description>
+				<Form.Description>Enter a secret here like a password.</Form.Description>
 			</Form.Control>
 			<Form.FieldErrors />
 		</Form.Field>
-		<Form.Button>Submit</Form.Button>
+		<Form.Field {form} name="maxViewCount">
+			<Form.Control let:attrs>
+				<Form.Label>
+					Expire secret after <span class="font-semibold">{$formData.maxViewCount}</span>
+					view{$formData.maxViewCount > 1 ? '' : 's'}
+				</Form.Label>
+				<Input {...attrs} bind:value={$formData.maxViewCount} type="number" class="hidden" />
+				<div class="flex flex-row justify-around gap-2">
+					<Button
+						class="w-32"
+						onclick={() => {
+							$formData.maxViewCount++;
+						}}
+					>
+						<Plus />
+					</Button>
+					<Button
+						class="w-32"
+						onclick={() => {
+							$formData.maxViewCount--;
+						}}
+					>
+						<Minus />
+					</Button>
+				</div>
+			</Form.Control>
+			<Form.FieldErrors />
+		</Form.Field>
+		<Form.Button>Generate link</Form.Button>
 	</form>
 {/if}
