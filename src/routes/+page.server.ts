@@ -10,10 +10,13 @@ export const load = async () => {
   };
 };
 
+// No Dynamic Typing with PocketBase yet :(
 export interface Secret extends RecordModel {
   iv: string
   data: string
   keyPubPart: string
+  maxViewCount: number
+  viewCount: number
 }
 
 export const actions: Actions = {
@@ -27,9 +30,7 @@ export const actions: Actions = {
     }
 
     try {
-      // No Dynamic Typing with PocketBase yet :(
-
-      const secret = await event.locals.pb.collection('secrets').create<Secret>(form.data)
+      const secret = await event.locals.pb.collection('secrets').create<Secret>({ ...form.data, viewCount: 0 })
       return message(form, { secretId: secret.id })
     } catch (error) {
       return setError(form, `Internal Server Error. Unable to process the request.`, { status: 500 })
