@@ -11,6 +11,10 @@
 
 	const priKeyPart = $page.url.hash.slice(1);
 	const promise = async (): Promise<string> => {
+		if (data.secret === null || data.secret === undefined) {
+			console.dir(data);
+			return Promise.reject('too bad');
+		}
 		// Decode shit
 		const rawKey = new Uint8Array(
 			[...atob(data.secret.keyPubPart + priKeyPart)].map((char) => char.charCodeAt(0))
@@ -58,7 +62,7 @@
 		<Skeleton class="h-[20px] max-w-[80%] justify-self-center" />
 	{:then value}
 		<div class="flex flex-col">
-			<div class="m-auto w-full max-w-[80%]">
+			<div class="m-auto w-full max-w-[80%] space-y-2">
 				<Textarea
 					class="h-fit resize-none focus:border-none focus-visible:ring-0 disabled:cursor-pointer"
 					{value}
@@ -75,7 +79,7 @@
 						<ClipboardPen class="ml-2"></ClipboardPen>
 					</Button>
 					<form method="POST" class="flex w-3/12 flex-col" use:enhance>
-						<input name="secretId" type="text" value={data.secret.id} hidden />
+						<input name="secretId" type="text" value={$page.params.id} hidden />
 						<Button variant="destructive" type="submit">
 							<Trash2 />
 						</Button>
@@ -86,9 +90,4 @@
 	{:catch error}
 		<p>Something went wrong: {error.message}</p>
 	{/await}
-	<!-- {#if !priKeyPart} -->
-	<!-- 	<div>Your link is incomplete :(</div> -->
-	<!-- 	<div>Unable to decypher :(</div> -->
-	<!-- {:else} -->
-	<!-- {/if} -->
 {/if}
