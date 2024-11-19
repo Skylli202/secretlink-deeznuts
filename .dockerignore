@@ -1,0 +1,8 @@
+node_modules/
+.svelte-kit/
+build/
+
+pocketbase
+pb_data
+pb_hooks
+pb_migrations

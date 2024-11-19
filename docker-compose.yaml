@@ -1,0 +1,24 @@
+services:
+  svkit:
+    build:
+      dockerfile: web.Dockerfile
+    ports:
+      - "3000:3000"
+    env_file: ".env"
+    depends_on:
+      pb:
+        condition: service_started
+    volumes:
+      - type: bind
+        source: .env
+        target: /app/.env
+        read_only: true
+  pb:
+    build:
+      dockerfile: db.Dockerfile
+    ports:
+      - "8090:8090"
+    volumes:
+      - ./pb_data/:/pb/pb_data
+      - ./pb_hooks/:/pb/pb_hooks
+      - ./pb_migrations/:/pb/pb_migrations
