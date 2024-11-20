@@ -20,10 +20,6 @@ COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/package-lock.json ./package-lock.json
 RUN npm ci --omit dev
 
-
-# set NODE_ENV environment variable to production
-ENV NODE_ENV=production
-
 # run app
 EXPOSE 3000
 CMD ["node", "build"]
