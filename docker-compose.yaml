@@ -1,7 +1,8 @@
 services:
   svkit:
     build:
-      dockerfile: web.Dockerfile
+      # dockerfile: web.Dockerfile
+      dockerfile: web-node.Dockerfile
     ports:
       - "3000:3000"
     labels:
