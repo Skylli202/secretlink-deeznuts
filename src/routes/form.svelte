@@ -26,7 +26,7 @@
 		// 	}
 		// },
 		onSubmit: async (input) => {
-			console.log('superForm::onSubmit');
+			// console.log('superForm::onSubmit');
 			const encoder = new TextEncoder();
 
 			// Generate AES-GCM key
@@ -68,8 +68,8 @@
 			);
 			input.formData.set('maxViewCount', $formData.maxViewCount.toString());
 
-			console.log(input.formData.has('maxViewCount'), input.formData.get('maxViewCount'));
-			console.dir(input.formData.entries().toArray());
+			// console.log(input.formData.has('maxViewCount'), input.formData.get('maxViewCount'));
+			// console.dir(input.formData.entries().toArray());
 			// console.dir({ key, iv, data });
 		}
 	});
