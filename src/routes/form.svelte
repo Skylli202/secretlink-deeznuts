@@ -138,6 +138,7 @@
 						onclick={() => {
 							$formData.maxViewCount--;
 						}}
+						disabled={$formData.maxViewCount === 1}
 					>
 						<Minus />
 					</Button>
