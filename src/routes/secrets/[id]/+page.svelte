@@ -66,6 +66,7 @@
 				<Textarea
 					class="h-fit resize-none focus:border-none focus-visible:ring-0 disabled:cursor-pointer"
 					{value}
+					disabled
 				/>
 				<div class="flex w-full flex-row gap-2">
 					<Button
