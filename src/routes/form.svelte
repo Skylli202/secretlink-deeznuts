@@ -83,7 +83,7 @@
 </script>
 
 {#if $message}
-	<form class="flex w-full max-w-[80%] items-center space-x-0 justify-self-center">
+	<form class="flex w-full items-center space-x-0">
 		<Input
 			type="text"
 			class="rounded-r-none focus-visible:ring-0 disabled:cursor-pointer"
@@ -103,12 +103,7 @@
 		</Button>
 	</form>
 {:else}
-	<form
-		method="POST"
-		action="?/new"
-		class="flex w-full max-w-[80%] flex-col justify-self-center"
-		use:enhance
-	>
+	<form method="POST" action="?/new" class="flex w-full flex-col space-y-6" use:enhance>
 		<Form.Field {form} name="data">
 			<Form.Control let:attrs>
 				<Form.Label>Enter your secret</Form.Label>
@@ -124,7 +119,7 @@
 					view{$formData.maxViewCount > 1 ? '' : 's'}
 				</Form.Label>
 				<Input {...attrs} bind:value={$formData.maxViewCount} type="number" class="hidden" />
-				<div class="flex flex-row justify-around gap-2">
+				<div class="flex flex-row justify-center gap-24">
 					<Button
 						class="w-32"
 						onclick={() => {
@@ -146,6 +141,6 @@
 			</Form.Control>
 			<Form.FieldErrors />
 		</Form.Field>
-		<Form.Button>Generate link</Form.Button>
+		<Form.Button class="mt-auto">Generate link</Form.Button>
 	</form>
 {/if}

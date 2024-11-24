@@ -4,6 +4,6 @@
 	let { data } = $props();
 </script>
 
-<div class="container mt-8 flex flex-col items-center">
+<div class="m-auto flex w-4/5">
 	<Form data={data.form} />
 </div>
