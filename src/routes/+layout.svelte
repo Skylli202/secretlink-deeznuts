@@ -1,7 +1,6 @@
 <script>
-	import { ModeWatcher, toggleMode, resetMode, setMode, mode } from 'mode-watcher';
+	import { ModeWatcher, toggleMode } from 'mode-watcher';
 	import '../app.css';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { Button } from '$lib/components/ui/button';
 	import { Sun, Moon } from 'lucide-svelte';
 </script>
