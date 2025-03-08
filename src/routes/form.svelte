@@ -108,7 +108,7 @@
 			<Form.Control let:attrs>
 				<Form.Label>Enter your secret</Form.Label>
 				<Textarea {...attrs} class="resize-none" bind:value={secret} />
-				<Form.Description>Enter a secret here like a password.</Form.Description>
+				<Form.Description>Enter a secret here like a password, or a passphrase! It will be automatically deleted!</Form.Description>
 			</Form.Control>
 			<Form.FieldErrors />
 		</Form.Field>
