@@ -5,7 +5,7 @@ import PocketBase, { ClientResponseError } from 'pocketbase'
 export async function handle({ event, resolve }) {
   try {
     event.locals.pb = new PocketBase(env.PB_URL)
-    await event.locals.pb.admins.authWithPassword(env.PB_ADMIN_EMAIL ?? "", env.PB_ADMIN_PASSWORD ?? "")
+    await event.locals.pb.collection("_superusers").authWithPassword(env.PB_ADMIN_EMAIL ?? "", env.PB_ADMIN_PASSWORD ?? "")
   } catch (e) {
     if (e instanceof ClientResponseError) {
       console.error(`Failed to connect to PocketBase at URL: ${env.PB_URL} with login: ${env.PB_ADMIN_EMAIL}.`)
