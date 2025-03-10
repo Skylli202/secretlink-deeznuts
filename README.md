@@ -1,22 +1,37 @@
-# create-svelte
+# Secretlink DeezNuts
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+Secretlink-DeezNuts is yet another (boring) secret sharing application.
+It is mostly a personal & side-project used as an excuse to explore
+and play with some cool tech I love:
+Svelte (and its meta-framework SvelteKit),
+[shadcn-svelte](https://www.shadcn-svelte.com) and
+[PocketBase](https://pocketbase.io).
 
-## Creating a project
+## Roadmap & Ideas
 
-If you're seeing this, you've probably already done this step. Congrats!
+> I'm not currently particularly actively developing this project at the moment.
+> But development should resume one day or another.
+
+- Implement user registration & login.
+- Allow a user to list the secrets he generated and see the `viewCount`.
+
+> If you have any feature request, idea or suggestion, please raise an issue!
+
+## Develop
+
+Start the PocketBase server:
 
 ```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
+./pocketbase serve
 ```
 
-## Developing
+> The first time it will generate an installer link that should be
+> automatically opened in the browser to setup your first superuser
+> account (you can also create the first superuser manually via
+> `./pocketbase superuser create EMAIL PASS`).
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+Once you've started the PocketBase server, installed the dependencies
+with `npm install`, you can start the web application development server:
 
 ```bash
 npm run dev
@@ -25,15 +40,25 @@ npm run dev
 npm run dev -- --open
 ```
 
-## Building
+## (Re)Build docker images
 
-To create a production version of your app:
+Build the PocketBase image by executing:
 
 ```bash
-npm run build
+docker build -f db.Dockerfile .
+
+# or to build with the tag & push to repository
+docker build -t skylli202/secretlink-deeznuts:pocketbase -f db.Dockerfile . --push
 ```
 
-You can preview the production build with `npm run preview`.
+> The `db.Dockerfile` is based of PocketBase's documentation on
+> [Going to production using Docker](https://pocketbase.io/docs/going-to-production/#using-docker)
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
-# secretlink-deeznuts
+Build the SvelteKit image by executing:
+
+```bash
+docker build -f web-node.Dockerfile .
+
+# or to build with the tag & push to repository
+docker build -t skylli202/secretlink-deeznuts:sveltekit -f web-node.Dockerfile . --push
+```
