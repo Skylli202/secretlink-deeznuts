@@ -8,7 +8,7 @@ export async function handle({ event, resolve }) {
     await event.locals.pb.collection("_superusers").authWithPassword(env.PB_ADMIN_EMAIL ?? "", env.PB_ADMIN_PASSWORD ?? "")
   } catch (e) {
     if (e instanceof ClientResponseError) {
-      console.error(`Failed to connect to PocketBase at URL: ${env.PB_URL} with login: ${env.PB_ADMIN_EMAIL}.`)
+      console.error(`Failed to connect to PocketBase at URL: ${env.PB_URL} with login: ${env.PB_ADMIN_EMAIL} (status=${e.status}). Pocketbase error: ${e.originalError}`)
       return error(503, 'Service Unavailable: PocketBase error.')
     }
     return error(503, 'Service Unavailable: Unknown error.')
