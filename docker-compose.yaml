@@ -25,6 +25,11 @@ services:
       - ./pb_data/:/pb/pb_data
       - ./pb_hooks/:/pb/pb_hooks
       - ./pb_migrations/:/pb/pb_migrations
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://0.0.0.0:8090/api/health"]
+      interval: 3s
+      timeout: 5s
+      retries: 3
   reverse-proxy:
     image: traefik:v3.1
     command:
