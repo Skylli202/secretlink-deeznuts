@@ -1,8 +1,6 @@
 services:
   svkit:
-    build:
-      # dockerfile: web.Dockerfile
-      dockerfile: web-node.Dockerfile
+    image: skylli202/secretlink-deeznuts:sveltekit
     ports:
       - "3000:3000"
     labels:
@@ -20,8 +18,7 @@ services:
         target: /app/.env
         read_only: true
   pb:
-    build:
-      dockerfile: db.Dockerfile
+    image: skylli202/secretlink-deeznuts:pocketbase
     ports:
       - "8090:8090"
     volumes:
