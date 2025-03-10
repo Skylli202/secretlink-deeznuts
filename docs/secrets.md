@@ -15,5 +15,5 @@ The `svkit` container use the [env_file](https://docs.docker.com/compose/how-tos
 attribute.
 
 > In the monolith server setup, both `svkit` and `pb` container are executed on
-> the same host. All containers are automically added in the single docker's network.
+> the same host. All containers are automatically added in the single docker's network.
 > Because of this, in this scenario, the `PB_URL` usually looks like `http://pb:8090`.
